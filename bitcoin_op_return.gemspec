@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'bitcoin_op_return'
-  s.version     = '0.0.0'
-  s.date        = '2014-11-24'
+  s.version     = '0.0.1'
+  s.date        = '2014-11-25'
   s.summary     = "Send OP Return transactions"
   s.description = "A simple gem for you to send op_return into the bitcoin blockchain with ruby"
   s.authors     = ["FY Quah"]

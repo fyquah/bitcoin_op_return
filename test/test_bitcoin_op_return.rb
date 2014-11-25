@@ -1,6 +1,5 @@
-# encoding: UTF-8
 require "minitest/autorun"
-require "./lib/bitcoin-op-return.rb"
+require "#{File.dirname __FILE__}/../lib/bitcoin_op_return.rb"
 
 class BitcoinOpReturnTest < Minitest::Test
   SAMPLE_RAW_TXN = ["0100000001c4b6a6a63db978d9d7126091aa09d45d2c50a913b083c61cbe5cf3186164c95b0000000000ffffffff0310270000000000001976a9142f19e72489d51a1903c20bf8a371f5a823abfb8588aca0782d00000000001976a914297eea0230017cc4f5e0c7d54a8484ce84f001ae88ac00000000000000000a6a086d6574616461746100000000", "0100000001c4b6a6a63db978d9d7126091aa09d45d2c50a913b083c61cbe5cf3186164c95b0000000000ffffffff0330750000000000001976a9147d96a539f86fc1c706fce932b57a3b873d06847a88ac802a2d00000000001976a91427679fbf906e43f7e72c79c43b7c3a20770a79c288ac00000000000000000a6a086d6574616461746100000000"
@@ -62,7 +61,7 @@ class BitcoinOpReturnTest < Minitest::Test
       "send_address" => 1,
       "metadata" => "hello world"
     })
-    assert_equal msg, { "error" => "invalid address" }
+    assert_equal msg, { :error => "invalid address" }
   end
 
   def test_pack_uint64

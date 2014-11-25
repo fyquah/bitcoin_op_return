@@ -14,7 +14,8 @@ You **HAVE TO** configure the path to the bitcoind / bitcoind-qt executable. By 
 BitcoinOpReturn.create({
   :address => "1CT3w1LV84oCdmqD8scrru84nP6QPaR8gC", 
   :amount => 0.0001, # amount is in BTC, not satoshis
-  :metadata => "metadata"
+  :metadata => "metadata",
+  :transaction_fee => "0.0005" # transaction_fee can be ommitted, and will default to 0.0001
 })
 ~~~
 
@@ -27,6 +28,18 @@ BitcoinOpReturn.create({
   :metadata => "metadata",
   :testnet => true
 })
+~~~
+
+To change the path to executable bitcoind / bitcoind-qt :
+
+~~~ruby
+BitcoinOpReturn.bitcoind_cmd = "/path/to/bitcoind"
+~~~
+
+To change the default transaction fee of `0.0001` : 
+
+~~~ruby
+BitcoinOpReturn.transaction_fee = "/path/to/bitcoind"
 ~~~
 
 the operation will return one of the two following outputs:

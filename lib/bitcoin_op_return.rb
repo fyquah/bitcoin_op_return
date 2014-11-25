@@ -7,26 +7,26 @@ class String
   end
 end
 
-module BitcoinOpReturn
-  BITCOIND_CMD = "/usr/local/bin/bitcoind"
-  TRANSACTION_FEE = 0.0001
-  
+module BitcoinOpReturn  
   class << self
+    attr_accessor :bitcoind_cmd, :transaction_fee
+
     def create options
       send_address = options[:address].to_s
       send_amount = options[:amount].to_f
       metadata = options[:metadata].to_s
       testnet = !options[:testnet].nil?
+      transaction_fee = options[:transaction_fee].to_f || self.transaction_fee
 
       # convert to hex where possible
       metadata = [ metadata ].pack("H*") if metadata =~ /\A([0-9A-Fa-f]{2})*\z/
 
-      return { "error" => "invalid address" } unless bitcoind("validateaddress", testnet, send_address)["isvalid"]
-      return { "error" => "metadata too long, limit is 75, recommended is 40 bytes" } if metadata.length > 75
+      return { :error => "invalid address" } unless bitcoind("validateaddress", testnet, send_address)["isvalid"]
+      return { :error => "metadata too long, limit is 75, recommended is 40 bytes" } if metadata.length > 75
 
       # get the unspent inputs
       unspent_inputs = bitcoind("listunspent", testnet, 0)
-      return { "error" => "unable to retrieve unspent inputs" } unless unspent_inputs.kind_of? Array
+      return { :error => "unable to retrieve unspent inputs" } unless unspent_inputs.kind_of? Array
 
       unspent_inputs.each do |input|
         input["priority"] = input["amount"] * input["confirmations"]
@@ -38,11 +38,11 @@ module BitcoinOpReturn
         # a follows b => -1
         # a == b => 0
         # b follows a => 1
-          a == b ? 0 : (a < b ? 1 : -1)
+        a == b ? 0 : (a < b ? 1 : -1)
       end
 
       inputs_spend = []
-      output_amount = send_amount + TRANSACTION_FEE
+      output_amount = send_amount + self.transaction_fee
       inputs_amount = 0
 
       unspent_inputs.each do |input|
@@ -51,7 +51,7 @@ module BitcoinOpReturn
         break if inputs_amount >= output_amount
       end
 
-      return { "error" => "insufficient funds to carry out transaction" } if inputs_amount < output_amount
+      return { :error => "insufficient funds to carry out transaction" } if inputs_amount < output_amount
 
 
       outputs_hash = {}
@@ -96,7 +96,7 @@ module BitcoinOpReturn
 
     private
       def bitcoind cmd, testnet, *args
-        command = "#{BITCOIND_CMD} #{testnet ? "-testnet" : ""}"
+        command = "#{self.bitcoind_cmd} #{testnet ? "-testnet" : ""}"
 
         command += " #{Shellwords.escape(cmd)}"
 
@@ -249,4 +249,7 @@ module BitcoinOpReturn
         txn
       end
   end
+
+  self.bitcoind_cmd = "/usr/local/bin/bitcoind"
+  self.transaction_fee = 0.0001
 end
